@@ -1,6 +1,9 @@
 import {NgModule} from "@angular/core";
-import {AwesomeHttpService} from "./awesome-http.service";
 import {HttpModule} from "@angular/http";
+
+import {AwesomeHttpService} from "./awesome-http.service";
+export {AwesomeHttpService} from "./awesome-http.service";
+
 
 @NgModule({
   imports: [
@@ -8,5 +11,5 @@ import {HttpModule} from "@angular/http";
   ],
   providers: [AwesomeHttpService]
 })
-export class AwesomeHttpModule{
+export class AwesomeHttpModule {
 }

@@ -5,7 +5,7 @@
     "lint": "tslint src/**/*.ts",
     "test": "tsc && karma start",
     "postinstall": "typings install",
-    "prepublish": "tsc",
+    "prepublish": "rm -rf ./dist && tsc",
     "tsc": "tsc",
     "typings": "typings"
   },
