@@ -1,0 +1,51 @@
+{
+  "name": "ng2-awesome-http",
+  "version": "0.1.0",
+  "scripts": {
+    "lint": "tslint src/**/*.ts",
+    "test": "tsc && karma start",
+    "postinstall": "typings install",
+    "prepublish": "tsc",
+    "tsc": "tsc",
+    "typings": "typings"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.dev.fr.auchan.com/pilot/ng2-awesome-http.git"
+  },
+  "author": {
+    "name": "Christophe Sailly",
+    "email": "csailly.partner@gmail.com"
+  },
+  "keywords": [
+    "angular",
+    "angular2"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "http://gitlab.dev.fr.auchan.com/pilot/ng2-awesome-http/issues"
+  },
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@angular/core": "2.0.0-rc.6",
+    "@angular/http": "2.0.0-rc.6",
+    "@angular/platform-browser": "2.0.0-rc.6",
+    "@angular/common": "2.0.0-rc.6",
+    "codelyzer": "^0.0.28",
+    "rxjs": "5.0.0-beta.11",
+    "tslint": "^3.6.0",
+    "typescript": "^1.8.10",
+    "typings": "^1.0.4",
+    "zone.js": "0.6.17"
+  },
+  "peerDependencies": {
+    "@angular/http": "2.0.0-rc.6"
+  },
+  "engines": {
+    "node": ">= 4.2.1",
+    "npm": ">= 3"
+  }
+}
