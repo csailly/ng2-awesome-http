@@ -3,16 +3,17 @@ import {Http, RequestOptionsArgs, Response, Headers, RequestOptions} from "@angu
 import {Observable} from "rxjs/Rx";
 import {IResponseInterceptor} from "./response-interceptor.interface";
 import {IRequestInterceptor} from "./request-interceptor.interface";
+import {CacheService} from "./cache.service";
 
 @Injectable()
 export class AwesomeHttpService {
 
-  private _responseErrorInterceptors:IResponseInterceptor[];
-  private _responseSuccessInterceptors:IResponseInterceptor[];
-  private _requestInterceptors:IRequestInterceptor[];
-  private _globalHeaders:Headers;
+  private _responseErrorInterceptors: IResponseInterceptor[];
+  private _responseSuccessInterceptors: IResponseInterceptor[];
+  private _requestInterceptors: IRequestInterceptor[];
+  private _globalHeaders: Headers;
 
-  constructor(private _http:Http) {
+  constructor(private _cacheService: CacheService, private _http: Http) {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", "Module constructor");
     this._responseErrorInterceptors = [];
     this._responseSuccessInterceptors = [];
@@ -23,8 +24,17 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `get` http method.
    */
-  get(url:string, options?:RequestOptionsArgs):Observable<Response> {
+  get(url: string, options?: RequestOptionsArgs, cacheable?: boolean): Observable<Response> {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
+
+
+    if (cacheable) {
+      let fromCache = this._cacheService.get(url);
+      if (fromCache) {
+        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " CACHE", fromCache);
+        return Observable.of(fromCache);
+      }
+    }
 
     this.applyRequestInterceptors();
 
@@ -34,6 +44,9 @@ export class AwesomeHttpService {
       .flatMap(res => {
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET successful", res);
         this.applyResponseSuccessInterceptors(res);
+        if (cacheable) {
+          this._cacheService.store(url, res);
+        }
         return Observable.of(res);
       })
       .catch(error => {
@@ -47,7 +60,7 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `post` http method.
    */
-  post(url:string, body:any, options?:RequestOptionsArgs):Observable<Response> {
+  post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " POST ", url);
 
     this.applyRequestInterceptors();
@@ -71,7 +84,7 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `delete` http method.
    */
-  delete(url:string, options?:RequestOptionsArgs):Observable<Response> {
+  delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " DELETE ", url);
 
     this.applyRequestInterceptors();
@@ -97,7 +110,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseErrorInterceptor(interceptor:IResponseInterceptor):void {
+  addResponseErrorInterceptor(interceptor: IResponseInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Error Interceptor ");
 
     this._responseErrorInterceptors.push(interceptor);
@@ -107,7 +120,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseSuccessInterceptor(interceptor:IResponseInterceptor):void {
+  addResponseSuccessInterceptor(interceptor: IResponseInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Success Interceptor ");
 
     this._responseSuccessInterceptors.push(interceptor);
@@ -117,7 +130,7 @@ export class AwesomeHttpService {
    * Add a new Request interceptor
    * @param interceptor: the interceptor to add.
    */
-  addRequestInterceptor(interceptor:IRequestInterceptor):void {
+  addRequestInterceptor(interceptor: IRequestInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Request Interceptor ");
 
     this._requestInterceptors.push(interceptor);
@@ -128,12 +141,12 @@ export class AwesomeHttpService {
    * @param name: the header name
    * @param value: the header value
    */
-  addGlobalHeader(name:string, value:any):void {
+  addGlobalHeader(name: string, value: any): void {
     this._globalHeaders.append(name, value);
   }
 
 
-  private applyGlobalHeaders(options:RequestOptionsArgs):RequestOptionsArgs {
+  private applyGlobalHeaders(options: RequestOptionsArgs): RequestOptionsArgs {
     let myoptions = options || new RequestOptions({headers: new Headers()});
     for (const key of this._globalHeaders.keys()) {
       myoptions.headers.append(key, this._globalHeaders.get(key));
@@ -141,19 +154,19 @@ export class AwesomeHttpService {
     return myoptions;
   }
 
-  private applyResponseErrorInterceptors(response:Response):void {
+  private applyResponseErrorInterceptors(response: Response): void {
     for (const interceptor of this._responseErrorInterceptors) {
       interceptor.afterResponse(response);
     }
   }
 
-  private applyResponseSuccessInterceptors(response:Response):void {
+  private applyResponseSuccessInterceptors(response: Response): void {
     for (const interceptor of this._responseSuccessInterceptors) {
       interceptor.afterResponse(response);
     }
   }
 
-  private applyRequestInterceptors():void {
+  private applyRequestInterceptors(): void {
     for (const interceptor of this._requestInterceptors) {
       interceptor.beforeRequest();
     }

@@ -11,8 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 var Rx_1 = require("rxjs/Rx");
+var cache_service_1 = require("./cache.service");
 var AwesomeHttpService = (function () {
-    function AwesomeHttpService(_http) {
+    function AwesomeHttpService(_cacheService, _http) {
+        this._cacheService = _cacheService;
         this._http = _http;
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", "Module constructor");
         this._responseErrorInterceptors = [];
@@ -23,15 +25,25 @@ var AwesomeHttpService = (function () {
     /**
      * Performs a request with `get` http method.
      */
-    AwesomeHttpService.prototype.get = function (url, options) {
+    AwesomeHttpService.prototype.get = function (url, options, cacheable) {
         var _this = this;
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
+        if (cacheable) {
+            var fromCache = this._cacheService.get(url);
+            if (fromCache) {
+                console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " CACHE", fromCache);
+                return Rx_1.Observable.of(fromCache);
+            }
+        }
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
         return this._http.get(url, myoptions)
             .flatMap(function (res) {
             console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET successful", res);
             _this.applyResponseSuccessInterceptors(res);
+            if (cacheable) {
+                _this._cacheService.store(url, res);
+            }
             return Rx_1.Observable.of(res);
         })
             .catch(function (error) {
@@ -140,7 +152,7 @@ var AwesomeHttpService = (function () {
     };
     AwesomeHttpService = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [http_1.Http])
+        __metadata('design:paramtypes', [cache_service_1.CacheService, http_1.Http])
     ], AwesomeHttpService);
     return AwesomeHttpService;
 }());
