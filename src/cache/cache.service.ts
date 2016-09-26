@@ -14,10 +14,14 @@ export class CacheService {
 
     if (cacheValue && cacheValue.endValidityTime && Date.now() > cacheValue.endValidityTime) {
       this._cache.delete(key);
-      return null;
+      return undefined;
     }
 
-    return cacheValue;
+    if (cacheValue){
+      return cacheValue.value;
+    }
+
+    return undefined;
   }
 
   store(key: string, value: any, ttl?: number) {

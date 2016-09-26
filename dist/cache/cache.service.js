@@ -9,15 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
+var cache_value_1 = require("./cache-value");
 var CacheService = (function () {
     function CacheService() {
         this._cache = new Map();
     }
     CacheService.prototype.get = function (key) {
-        return this._cache.get(key);
+        var cacheValue = this._cache.get(key);
+        if (cacheValue && cacheValue.endValidityTime && Date.now() > cacheValue.endValidityTime) {
+            this._cache.delete(key);
+            return undefined;
+        }
+        if (cacheValue) {
+            return cacheValue.value;
+        }
+        return undefined;
     };
-    CacheService.prototype.store = function (key, value) {
-        this._cache.set(key, value);
+    CacheService.prototype.store = function (key, value, ttl) {
+        var cacheValue = new cache_value_1.CacheValue();
+        cacheValue.value = value;
+        if (ttl) {
+            cacheValue.endValidityTime = Date.now() + ttl;
+        }
+        this._cache.set(key, cacheValue);
     };
     CacheService = __decorate([
         core_1.Injectable(), 

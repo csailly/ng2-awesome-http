@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 var Rx_1 = require("rxjs/Rx");
-var cache_service_1 = require("./cache.service");
+var cache_service_1 = require("./cache/cache.service");
 var AwesomeHttpService = (function () {
     function AwesomeHttpService(_cacheService, _http) {
         this._cacheService = _cacheService;
@@ -25,10 +25,10 @@ var AwesomeHttpService = (function () {
     /**
      * Performs a request with `get` http method.
      */
-    AwesomeHttpService.prototype.get = function (url, options, cacheable) {
+    AwesomeHttpService.prototype.get = function (url, options, cacheConfig) {
         var _this = this;
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
-        if (cacheable) {
+        if (cacheConfig && cacheConfig.useCache && !cacheConfig.forceUpdate) {
             var fromCache = this._cacheService.get(url);
             if (fromCache) {
                 console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " CACHE", fromCache);
@@ -41,8 +41,8 @@ var AwesomeHttpService = (function () {
             .flatMap(function (res) {
             console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET successful", res);
             _this.applyResponseSuccessInterceptors(res);
-            if (cacheable) {
-                _this._cacheService.store(url, res);
+            if (cacheConfig && cacheConfig.useCache) {
+                _this._cacheService.store(url, res, cacheConfig.ttl);
             }
             return Rx_1.Observable.of(res);
         })

@@ -2,7 +2,8 @@ import { Http, RequestOptionsArgs, Response } from "@angular/http";
 import { Observable } from "rxjs/Rx";
 import { IResponseInterceptor } from "./response-interceptor.interface";
 import { IRequestInterceptor } from "./request-interceptor.interface";
-import { CacheService } from "./cache.service";
+import { CacheService } from "./cache/cache.service";
+import { ICacheConfig } from "./cache/cache-config.interface";
 export declare class AwesomeHttpService {
     private _cacheService;
     private _http;
@@ -14,7 +15,7 @@ export declare class AwesomeHttpService {
     /**
      * Performs a request with `get` http method.
      */
-    get(url: string, options?: RequestOptionsArgs, cacheable?: boolean): Observable<Response>;
+    get(url: string, options?: RequestOptionsArgs, cacheConfig?: ICacheConfig): Observable<Response>;
     /**
      * Performs a request with `post` http method.
      */

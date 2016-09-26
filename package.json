@@ -2,11 +2,13 @@
   "name": "ng2-awesome-http",
   "version": "0.2.0",
   "scripts": {
-    "lint": "tslint src/**/*.ts",
-    "postinstall": "typings install",
-    "prepublish": "rm -rf ./dist && tsc",
-    "tsc": "tsc",
-    "typings": "typings"
+    "clean": "rimraf typings src/*.{js,d.ts}",
+    "build": "typings install && tsc",
+    "lint": "tslint src/*.ts",
+    "test": "karma start",
+    "test:ci": "karma start --singleRun",
+    "prepublish": "npm run build",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
@@ -28,20 +30,33 @@
   "typings": "./dist/index.d.ts",
   "dependencies": {},
   "devDependencies": {
-    "@angular/common": "2.0.0",
-    "@angular/core": "2.0.0",
-    "@angular/http": "2.0.0",
-    "@angular/platform-browser": "2.0.0",
+    "@angular/common": "^2.0.0",
+    "@angular/compiler": "^2.0.0",
+    "@angular/core": "^2.0.0",
+    "@angular/http": "^2.0.0",
+    "@angular/platform-browser": "^2.0.0",
+    "@angular/platform-browser-dynamic": "^2.0.0",
     "codelyzer": "^0.0.28",
+    "concurrently": "^2.2.0",
+    "es6-shim": "^0.35.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-webpack": "1.7.0",
+    "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.12",
+    "ts-helpers": "^1.1.1",
+    "ts-loader": "^0.8.1",
     "tslint": "^3.6.0",
     "typescript": "^1.8.10",
     "typings": "^1.0.4",
+    "webpack": "^1.12.13",
     "zone.js": "0.6.25"
   },
   "peerDependencies": {
-    "@angular/core": "2.0.0",
-    "@angular/http": "2.0.0",
+    "@angular/core": "^2.0.0",
+    "@angular/http": "^2.0.0",
     "rxjs": "5.0.0-beta.12"
   },
   "engines": {
