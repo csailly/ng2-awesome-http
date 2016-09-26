@@ -3,7 +3,8 @@ import {Http, RequestOptionsArgs, Response, Headers, RequestOptions} from "@angu
 import {Observable} from "rxjs/Rx";
 import {IResponseInterceptor} from "./response-interceptor.interface";
 import {IRequestInterceptor} from "./request-interceptor.interface";
-import {CacheService} from "./cache.service";
+import {CacheService} from "./cache/cache.service";
+import {ICacheConfig} from "./cache/cache-config.interface";
 
 @Injectable()
 export class AwesomeHttpService {
@@ -24,11 +25,11 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: RequestOptionsArgs, cacheable?: boolean): Observable<Response> {
+  get(url: string, options?: RequestOptionsArgs, cacheConfig?: ICacheConfig): Observable<Response> {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
 
 
-    if (cacheable) {
+    if (cacheConfig && cacheConfig.useCache && !cacheConfig.forceUpdate) {
       let fromCache = this._cacheService.get(url);
       if (fromCache) {
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " CACHE", fromCache);
@@ -44,8 +45,8 @@ export class AwesomeHttpService {
       .flatMap(res => {
         console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET successful", res);
         this.applyResponseSuccessInterceptors(res);
-        if (cacheable) {
-          this._cacheService.store(url, res);
+        if (cacheConfig && cacheConfig.useCache) {
+          this._cacheService.store(url, res, cacheConfig.ttl);
         }
         return Observable.of(res);
       })
