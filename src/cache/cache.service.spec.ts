@@ -1,5 +1,5 @@
 import { inject, async, TestBed } from '@angular/core/testing';
-import {CacheService} from "./cache.service";
+import { CacheService } from './cache.service';
 describe('-= Cache Service =-', () => {
 
   beforeEach(() => {

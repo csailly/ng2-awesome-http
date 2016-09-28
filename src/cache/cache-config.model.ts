@@ -1,5 +1,5 @@
-export class  CacheConfig {
+export class CacheConfig {
   useCache: boolean;
   ttl: number;
-  forceUpdate: boolean
+  forceUpdate: boolean;
 }

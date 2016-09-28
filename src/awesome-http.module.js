@@ -8,18 +8,19 @@ exports.CacheConfig = cache_config_model_1.CacheConfig;
 var awesome_http_service_2 = require("./awesome-http.service");
 exports.AwesomeHttpService = awesome_http_service_2.AwesomeHttpService;
 var AwesomeHttpModule = (function () {
-    function AwesomeHttpModule() {
-    }
-    AwesomeHttpModule = __decorate([
-        core_1.NgModule({
-            imports: [
-                http_1.HttpModule
-            ],
-            providers: [awesome_http_service_1.AwesomeHttpService, cache_service_1.CacheService]
-        }), 
-        __metadata('design:paramtypes', [])
-    ], AwesomeHttpModule);
-    return AwesomeHttpModule;
+  function AwesomeHttpModule() {
+  }
+
+  AwesomeHttpModule = __decorate([
+    core_1.NgModule({
+      imports: [
+        http_1.HttpModule
+      ],
+      providers: [awesome_http_service_1.AwesomeHttpService, cache_service_1.CacheService]
+    }),
+    __metadata('design:paramtypes', [])
+  ], AwesomeHttpModule);
+  return AwesomeHttpModule;
 }());
 exports.AwesomeHttpModule = AwesomeHttpModule;
 //# sourceMappingURL=awesome-http.module.js.map

@@ -1,3 +1,3 @@
 export interface RequestInterceptor {
-  beforeRequest():void
+  beforeRequest(): void;
 }

@@ -1,1 +1,10 @@
-{"version":3,"file":"cache-config.model.js","sourceRoot":"","sources":["cache-config.model.ts"],"names":[],"mappings":";AAAA;IAAA;IAIA,CAAC;IAAD,kBAAC;AAAD,CAAC,AAJD,IAIC;AAJa,mBAAW,cAIxB,CAAA"}
+{
+  "version": 3,
+  "file": "cache-config.model.js",
+  "sourceRoot": "",
+  "sources": [
+    "cache-config.model.ts"
+  ],
+  "names": [],
+  "mappings": ";AAAA;IAAA;IAIA,CAAC;IAAD,kBAAC;AAAD,CAAC,AAJD,IAIC;AAJa,mBAAW,cAIxB,CAAA"
+}

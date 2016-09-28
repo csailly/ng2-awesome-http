@@ -1,1 +1,10 @@
-{"version":3,"file":"request-interceptor.model.js","sourceRoot":"","sources":["request-interceptor.model.ts"],"names":[],"mappings":""}
+{
+  "version": 3,
+  "file": "request-interceptor.model.js",
+  "sourceRoot": "",
+  "sources": [
+    "request-interceptor.model.ts"
+  ],
+  "names": [],
+  "mappings": ""
+}

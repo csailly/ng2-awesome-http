@@ -13,7 +13,7 @@ $ npm install ng2-awesome-http --save
 To generate all `*.js`, `*.js.map` and `*.d.ts` files:
 
 ```bash
-$ npm run tsc
+$ npm run build
 ```
 
 To lint all `*.ts` files:

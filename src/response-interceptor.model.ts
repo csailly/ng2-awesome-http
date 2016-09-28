@@ -1,5 +1,5 @@
-import {Response} from "@angular/http";
+import { Response } from '@angular/http';
 
 export interface ResponseInterceptor {
-  afterResponse(response:Response):void
+  afterResponse(response: Response): void;
 }
