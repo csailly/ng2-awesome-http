@@ -1,6 +1,6 @@
 {
   "name": "ng2-awesome-http",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "scripts": {
     "clean": "npm cache clean && npm run rimraf -- node_modules doc coverage dist",
     "build": "tsc",
