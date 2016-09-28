@@ -1,17 +1,17 @@
 import {Injectable} from "@angular/core";
 import {Http, RequestOptionsArgs, Response, Headers, RequestOptions} from "@angular/http";
 import {Observable} from "rxjs/Rx";
-import {IResponseInterceptor} from "./response-interceptor.interface";
-import {IRequestInterceptor} from "./request-interceptor.interface";
+import {ResponseInterceptor} from "./response-interceptor.model";
+import {RequestInterceptor} from "./request-interceptor.model";
 import {CacheService} from "./cache/cache.service";
-import {ICacheConfig} from "./cache/cache-config.interface";
+import {CacheConfig} from "./cache/cache-config.model";
 
 @Injectable()
 export class AwesomeHttpService {
 
-  private _responseErrorInterceptors: IResponseInterceptor[];
-  private _responseSuccessInterceptors: IResponseInterceptor[];
-  private _requestInterceptors: IRequestInterceptor[];
+  private _responseErrorInterceptors: ResponseInterceptor[];
+  private _responseSuccessInterceptors: ResponseInterceptor[];
+  private _requestInterceptors: RequestInterceptor[];
   private _globalHeaders: Headers;
 
   constructor(private _cacheService: CacheService, private _http: Http) {
@@ -25,7 +25,7 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: RequestOptionsArgs, cacheConfig?: ICacheConfig): Observable<Response> {
+  get(url: string, options?: RequestOptionsArgs, cacheConfig?: CacheConfig): Observable<Response> {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
 
 
@@ -111,7 +111,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseErrorInterceptor(interceptor: IResponseInterceptor): void {
+  addResponseErrorInterceptor(interceptor: ResponseInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Error Interceptor ");
 
     this._responseErrorInterceptors.push(interceptor);
@@ -121,7 +121,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseSuccessInterceptor(interceptor: IResponseInterceptor): void {
+  addResponseSuccessInterceptor(interceptor: ResponseInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Success Interceptor ");
 
     this._responseSuccessInterceptors.push(interceptor);
@@ -131,7 +131,7 @@ export class AwesomeHttpService {
    * Add a new Request interceptor
    * @param interceptor: the interceptor to add.
    */
-  addRequestInterceptor(interceptor: IRequestInterceptor): void {
+  addRequestInterceptor(interceptor: RequestInterceptor): void {
     console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Request Interceptor ");
 
     this._requestInterceptors.push(interceptor);

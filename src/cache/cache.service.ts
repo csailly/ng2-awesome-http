@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {CacheValue} from "./cache-value";
+import {CacheValue} from "./cache-value.model";
 
 @Injectable()
 export class CacheService {

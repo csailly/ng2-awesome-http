@@ -1,5 +1,5 @@
+import { inject, async, TestBed } from '@angular/core/testing';
 import {CacheService} from "./cache.service";
-import {inject, async, TestBed} from "@angular/core/testing";
 describe('-= Cache Service =-', () => {
 
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('-= Cache Service =-', () => {
     )
   );
 
-  it('Should store value with TTL', async(
+  it('Should store value with TTL and retrieve it before end of TTL', async(
     inject([CacheService], (cacheService: CacheService) => {
       let value = cacheService.get('foo');
       expect(value).toBeUndefined();
@@ -44,7 +44,7 @@ describe('-= Cache Service =-', () => {
     )
   );
 
-  it('Should store value with TTL', async(
+  it('Should store value with TTL and not retrieve it after end of TTL', async(
     inject([CacheService], (cacheService: CacheService) => {
       let value = cacheService.get('foo');
       expect(value).toBeUndefined();
