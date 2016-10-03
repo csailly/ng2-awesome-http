@@ -5,7 +5,7 @@
 To install this library, run:
 
 ```bash
-$ npm install git+http://gitlab.dev.fr.auchan.com/pilot/ng2-awesome-http.git#0.4.0 --save
+$ npm install ng2-awesome-http --save
 ```
 
 ## Setup
