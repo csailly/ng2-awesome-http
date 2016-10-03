@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://gitlab.dev.fr.auchan.com/pilot/ng2-awesome-http.git"
+    "url": "https://github.com/csailly/ng2-awesome-http.git"
   },
   "author": {
     "name": "Christophe Sailly",
@@ -24,7 +24,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "http://gitlab.dev.fr.auchan.com/pilot/ng2-awesome-http/issues"
+    "url": "https://github.com/csailly/ng2-awesome-http/issues"
   },
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
