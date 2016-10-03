@@ -1,4 +1,4 @@
-export { CacheConfig } from "./cache/cache-config.model";
-export { AwesomeHttpService } from "./awesome-http.service";
+export { AwesomeHttpService } from './awesome-http.service';
+export { HttpConfig } from './cache/http-config.model';
 export declare class AwesomeHttpModule {
 }

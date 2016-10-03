@@ -1,6 +1,6 @@
 "use strict";
 var testing_1 = require('@angular/core/testing');
-var cache_service_1 = require("./cache.service");
+var cache_service_1 = require('./cache.service');
 describe('-= Cache Service =-', function () {
     beforeEach(function () {
         testing_1.TestBed.configureTestingModule({

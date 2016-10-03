@@ -1,9 +1,9 @@
-import { Http, RequestOptionsArgs, Response } from "@angular/http";
-import { Observable } from "rxjs/Rx";
-import { ResponseInterceptor } from "./response-interceptor.model";
-import { RequestInterceptor } from "./request-interceptor.model";
-import { CacheService } from "./cache/cache.service";
-import { CacheConfig } from "./cache/cache-config.model";
+import { Http, RequestOptionsArgs, Response } from '@angular/http';
+import { Observable } from 'rxjs/Rx';
+import { ResponseInterceptor } from './response-interceptor.model';
+import { RequestInterceptor } from './request-interceptor.model';
+import { CacheService } from './cache/cache.service';
+import { HttpConfig } from './cache/http-config.model';
 export declare class AwesomeHttpService {
     private _cacheService;
     private _http;
@@ -11,19 +11,31 @@ export declare class AwesomeHttpService {
     private _responseSuccessInterceptors;
     private _requestInterceptors;
     private _globalHeaders;
+    private _config;
     constructor(_cacheService: CacheService, _http: Http);
+    setConfig(config: HttpConfig): void;
+    private getBaseUrl(httpConfig?);
+    private isUseCache(httpConfig?);
+    private isForceUpdate(httpConfig?);
+    private getCacheTTL(httpConfig?);
+    /**
+     * Ensure url end with '/' character.
+     * @param url
+     * @returns {string}
+     */
+    private normalizeUrl(url);
     /**
      * Performs a request with `get` http method.
      */
-    get(url: string, options?: RequestOptionsArgs, cacheConfig?: CacheConfig): Observable<Response>;
+    get(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response>;
     /**
      * Performs a request with `post` http method.
      */
-    post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+    post(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response>;
     /**
      * Performs a request with `delete` http method.
      */
-    delete(url: string, options?: RequestOptionsArgs): Observable<Response>;
+    delete(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response>;
     /**
      * Add a new Response interceptor
      * @param interceptor: the interceptor to add.

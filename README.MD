@@ -8,6 +8,20 @@ To install this library, run:
 $ npm install ng2-awesome-http --save
 ```
 
+## Functionality
+- Request Interceptor
+- Response Interceptor
+- Global Headers
+- Cache
+
+## Usage
+
+1.
+
+
+
+
+
 ## Development
 
 To generate all `*.js`, `*.js.map` and `*.d.ts` files:

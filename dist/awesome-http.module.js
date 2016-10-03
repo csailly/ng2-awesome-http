@@ -1,11 +1,9 @@
 "use strict";
-var core_1 = require("@angular/core");
-var http_1 = require("@angular/http");
-var awesome_http_service_1 = require("./awesome-http.service");
-var cache_service_1 = require("./cache/cache.service");
-var cache_config_model_1 = require("./cache/cache-config.model");
-exports.CacheConfig = cache_config_model_1.CacheConfig;
-var awesome_http_service_2 = require("./awesome-http.service");
+var core_1 = require('@angular/core');
+var http_1 = require('@angular/http');
+var awesome_http_service_1 = require('./awesome-http.service');
+var cache_service_1 = require('./cache/cache.service');
+var awesome_http_service_2 = require('./awesome-http.service');
 exports.AwesomeHttpService = awesome_http_service_2.AwesomeHttpService;
 var AwesomeHttpModule = (function () {
     function AwesomeHttpModule() {

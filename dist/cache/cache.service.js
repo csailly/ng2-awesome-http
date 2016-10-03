@@ -1,6 +1,6 @@
 "use strict";
-var core_1 = require("@angular/core");
-var cache_value_model_1 = require("./cache-value.model");
+var core_1 = require('@angular/core');
+var cache_value_model_1 = require('./cache-value.model');
 var CacheService = (function () {
     function CacheService() {
         this._cache = new Map();

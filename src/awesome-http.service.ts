@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Rx';
 import { ResponseInterceptor } from './response-interceptor.model';
 import { RequestInterceptor } from './request-interceptor.model';
 import { CacheService } from './cache/cache.service';
-import { CacheConfig } from './cache/cache-config.model';
+import { HttpConfig } from './cache/http-config.model';
 
 @Injectable()
 export class AwesomeHttpService {
@@ -13,24 +13,74 @@ export class AwesomeHttpService {
   private _responseSuccessInterceptors: ResponseInterceptor[];
   private _requestInterceptors: RequestInterceptor[];
   private _globalHeaders: Headers;
+  private _config: HttpConfig;
 
   constructor(private _cacheService: CacheService, private _http: Http) {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'Module constructor');
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'AwesomeHttpService constructor');
     this._responseErrorInterceptors = [];
     this._responseSuccessInterceptors = [];
     this._requestInterceptors = [];
     this._globalHeaders = new Headers();
+    this._config = {useCache: false, baseUrl: '', forceUpdate: false};
+  }
+
+  public setConfig(config: HttpConfig): void {
+    this._config.baseUrl = config.baseUrl || this._config.baseUrl;
+    this._config.useCache = config.useCache || this._config.useCache;
+    this._config.forceUpdate = config.forceUpdate || this._config.forceUpdate;
+    this._config.ttl = config.ttl || this._config.ttl;
+  }
+
+  private getBaseUrl(httpConfig?: HttpConfig): string {
+    if (httpConfig && httpConfig.baseUrl) {
+      return this.normalizeUrl(httpConfig.baseUrl);
+    }
+    return this.normalizeUrl(this._config.baseUrl);
+  }
+
+  private isUseCache(httpConfig?: HttpConfig): boolean {
+    if (httpConfig && httpConfig.useCache !== undefined) {
+      return httpConfig.useCache;
+    }
+    return this._config.useCache;
+  }
+
+  private isForceUpdate(httpConfig?: HttpConfig): boolean {
+    if (httpConfig && httpConfig.forceUpdate !== undefined) {
+      return httpConfig.forceUpdate;
+    }
+    return this._config.forceUpdate;
+  }
+
+  private getCacheTTL(httpConfig?: HttpConfig): number {
+    if (httpConfig && httpConfig.ttl) {
+      return httpConfig.ttl;
+    }
+    return this._config.ttl;
+  }
+
+  /**
+   * Ensure url end with '/' character.
+   * @param url
+   * @returns {string}
+   */
+  private normalizeUrl(url: string): string {
+    if (url[url.length - 1] !== '/') {
+      return url + '/';
+    }
+    return url
   }
 
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: RequestOptionsArgs, cacheConfig?: CacheConfig): Observable<Response> {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET ', url);
+  public get(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
+    let fullUrl: string = this.getBaseUrl(httpConfig) + url;
 
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET ', fullUrl);
 
-    if (cacheConfig && cacheConfig.useCache && !cacheConfig.forceUpdate) {
-      let fromCache = this._cacheService.get(url);
+    if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
+      let fromCache = this._cacheService.get(fullUrl);
       if (fromCache) {
         console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' CACHE', fromCache);
         return Observable.of(fromCache);
@@ -41,12 +91,12 @@ export class AwesomeHttpService {
 
     let myoptions = this.applyGlobalHeaders(options);
 
-    return this._http.get(url, myoptions)
+    return this._http.get(fullUrl, myoptions)
       .flatMap(res => {
         console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET successful', res);
         this.applyResponseSuccessInterceptors(res);
-        if (cacheConfig && cacheConfig.useCache) {
-          this._cacheService.store(url, res, cacheConfig.ttl);
+        if (this.isUseCache(httpConfig)) {
+          this._cacheService.store(fullUrl, res, this.getCacheTTL(httpConfig));
         }
         return Observable.of(res);
       })
@@ -61,14 +111,16 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `post` http method.
    */
-  post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST ', url);
+  public post(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
+    let fullUrl: string = this.getBaseUrl(httpConfig) + url;
+
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST ', fullUrl);
 
     this.applyRequestInterceptors();
 
     let myoptions = this.applyGlobalHeaders(options);
 
-    return this._http.post(url, body, myoptions)
+    return this._http.post(fullUrl, body, myoptions)
       .flatMap(res => {
         console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST successful', res);
         this.applyResponseSuccessInterceptors(res);
@@ -85,14 +137,16 @@ export class AwesomeHttpService {
   /**
    * Performs a request with `delete` http method.
    */
-  delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE ', url);
+  public delete(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
+    let fullUrl: string = this.getBaseUrl(httpConfig) + url;
+
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE ', fullUrl);
 
     this.applyRequestInterceptors();
 
     let myoptions = this.applyGlobalHeaders(options);
 
-    return this._http.delete(url, myoptions)
+    return this._http.delete(fullUrl, myoptions)
       .flatMap(res => {
         console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'successful', res);
 
@@ -111,7 +165,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseErrorInterceptor(interceptor: ResponseInterceptor): void {
+  public addResponseErrorInterceptor(interceptor: ResponseInterceptor): void {
     console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Error Interceptor ');
 
     this._responseErrorInterceptors.push(interceptor);
@@ -121,7 +175,7 @@ export class AwesomeHttpService {
    * Add a new Response interceptor
    * @param interceptor: the interceptor to add.
    */
-  addResponseSuccessInterceptor(interceptor: ResponseInterceptor): void {
+  public addResponseSuccessInterceptor(interceptor: ResponseInterceptor): void {
     console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•',
       ' add Response Success Interceptor ');
 
@@ -132,7 +186,7 @@ export class AwesomeHttpService {
    * Add a new Request interceptor
    * @param interceptor: the interceptor to add.
    */
-  addRequestInterceptor(interceptor: RequestInterceptor): void {
+  public addRequestInterceptor(interceptor: RequestInterceptor): void {
     console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Request Interceptor ');
 
     this._requestInterceptors.push(interceptor);
@@ -143,7 +197,7 @@ export class AwesomeHttpService {
    * @param name: the header name
    * @param value: the header value
    */
-  addGlobalHeader(name: string, value: any): void {
+  public addGlobalHeader(name: string, value: any): void {
     this._globalHeaders.append(name, value);
   }
 

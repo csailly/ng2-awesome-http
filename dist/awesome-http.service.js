@@ -1,44 +1,87 @@
 "use strict";
-var core_1 = require("@angular/core");
-var http_1 = require("@angular/http");
-var Rx_1 = require("rxjs/Rx");
-var cache_service_1 = require("./cache/cache.service");
+var core_1 = require('@angular/core');
+var http_1 = require('@angular/http');
+var Rx_1 = require('rxjs/Rx');
+var cache_service_1 = require('./cache/cache.service');
 var AwesomeHttpService = (function () {
     function AwesomeHttpService(_cacheService, _http) {
         this._cacheService = _cacheService;
         this._http = _http;
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", "Module constructor");
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'AwesomeHttpService constructor');
         this._responseErrorInterceptors = [];
         this._responseSuccessInterceptors = [];
         this._requestInterceptors = [];
         this._globalHeaders = new http_1.Headers();
+        this._config = { useCache: false, baseUrl: '', forceUpdate: false };
     }
+    AwesomeHttpService.prototype.setConfig = function (config) {
+        this._config.baseUrl = config.baseUrl || this._config.baseUrl;
+        this._config.useCache = config.useCache || this._config.useCache;
+        this._config.forceUpdate = config.forceUpdate || this._config.forceUpdate;
+        this._config.ttl = config.ttl || this._config.ttl;
+    };
+    AwesomeHttpService.prototype.getBaseUrl = function (httpConfig) {
+        if (httpConfig && httpConfig.baseUrl) {
+            return this.normalizeUrl(httpConfig.baseUrl);
+        }
+        return this.normalizeUrl(this._config.baseUrl);
+    };
+    AwesomeHttpService.prototype.isUseCache = function (httpConfig) {
+        if (httpConfig && httpConfig.useCache !== undefined) {
+            return httpConfig.useCache;
+        }
+        return this._config.useCache;
+    };
+    AwesomeHttpService.prototype.isForceUpdate = function (httpConfig) {
+        if (httpConfig && httpConfig.forceUpdate !== undefined) {
+            return httpConfig.forceUpdate;
+        }
+        return this._config.forceUpdate;
+    };
+    AwesomeHttpService.prototype.getCacheTTL = function (httpConfig) {
+        if (httpConfig && httpConfig.ttl) {
+            return httpConfig.ttl;
+        }
+        return this._config.ttl;
+    };
+    /**
+     * Ensure url end with '/' character.
+     * @param url
+     * @returns {string}
+     */
+    AwesomeHttpService.prototype.normalizeUrl = function (url) {
+        if (url[url.length - 1] !== '/') {
+            return url + '/';
+        }
+        return url;
+    };
     /**
      * Performs a request with `get` http method.
      */
-    AwesomeHttpService.prototype.get = function (url, options, cacheConfig) {
+    AwesomeHttpService.prototype.get = function (url, options, httpConfig) {
         var _this = this;
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET ", url);
-        if (cacheConfig && cacheConfig.useCache && !cacheConfig.forceUpdate) {
-            var fromCache = this._cacheService.get(url);
+        var fullUrl = this.getBaseUrl(httpConfig) + url;
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET ', fullUrl);
+        if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
+            var fromCache = this._cacheService.get(fullUrl);
             if (fromCache) {
-                console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " CACHE", fromCache);
+                console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' CACHE', fromCache);
                 return Rx_1.Observable.of(fromCache);
             }
         }
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
-        return this._http.get(url, myoptions)
+        return this._http.get(fullUrl, myoptions)
             .flatMap(function (res) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET successful", res);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET successful', res);
             _this.applyResponseSuccessInterceptors(res);
-            if (cacheConfig && cacheConfig.useCache) {
-                _this._cacheService.store(url, res, cacheConfig.ttl);
+            if (_this.isUseCache(httpConfig)) {
+                _this._cacheService.store(fullUrl, res, _this.getCacheTTL(httpConfig));
             }
             return Rx_1.Observable.of(res);
         })
             .catch(function (error) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " GET failed", error);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET failed', error);
             _this.applyResponseErrorInterceptors(error);
             return Rx_1.Observable.throw(error);
         });
@@ -46,19 +89,20 @@ var AwesomeHttpService = (function () {
     /**
      * Performs a request with `post` http method.
      */
-    AwesomeHttpService.prototype.post = function (url, body, options) {
+    AwesomeHttpService.prototype.post = function (url, body, options, httpConfig) {
         var _this = this;
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " POST ", url);
+        var fullUrl = this.getBaseUrl(httpConfig) + url;
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST ', fullUrl);
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
-        return this._http.post(url, body, myoptions)
+        return this._http.post(fullUrl, body, myoptions)
             .flatMap(function (res) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " POST successful", res);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST successful', res);
             _this.applyResponseSuccessInterceptors(res);
             return Rx_1.Observable.of(res);
         })
             .catch(function (error) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " POST failed", error);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST failed', error);
             _this.applyResponseErrorInterceptors(error);
             return Rx_1.Observable.throw(error);
         });
@@ -66,19 +110,20 @@ var AwesomeHttpService = (function () {
     /**
      * Performs a request with `delete` http method.
      */
-    AwesomeHttpService.prototype.delete = function (url, options) {
+    AwesomeHttpService.prototype.delete = function (url, options, httpConfig) {
         var _this = this;
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " DELETE ", url);
+        var fullUrl = this.getBaseUrl(httpConfig) + url;
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE ', fullUrl);
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
-        return this._http.delete(url, myoptions)
+        return this._http.delete(fullUrl, myoptions)
             .flatMap(function (res) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", "successful", res);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'successful', res);
             _this.applyResponseSuccessInterceptors(res);
             return Rx_1.Observable.of(res);
         })
             .catch(function (error) {
-            console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " DELETE failed", error);
+            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE failed', error);
             _this.applyResponseErrorInterceptors(error);
             return Rx_1.Observable.throw(error);
         });
@@ -88,7 +133,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addResponseErrorInterceptor = function (interceptor) {
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Error Interceptor ");
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Error Interceptor ');
         this._responseErrorInterceptors.push(interceptor);
     };
     /**
@@ -96,7 +141,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addResponseSuccessInterceptor = function (interceptor) {
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Response Success Interceptor ");
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Success Interceptor ');
         this._responseSuccessInterceptors.push(interceptor);
     };
     /**
@@ -104,7 +149,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addRequestInterceptor = function (interceptor) {
-        console.log("•?((¯°·._.• Awesome Http module •._.·°¯))؟•", " add Request Interceptor ");
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Request Interceptor ');
         this._requestInterceptors.push(interceptor);
     };
     /**
