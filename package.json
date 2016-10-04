@@ -21,7 +21,11 @@
   },
   "keywords": [
     "angular",
-    "angular2"
+    "angular2",
+    "ng2",
+    "http",
+    "cache",
+    "interceptor"
   ],
   "license": "MIT",
   "bugs": {
