@@ -31,46 +31,6 @@ export class AwesomeHttpService {
     this._config.ttl = config.ttl || this._config.ttl;
   }
 
-  private getBaseUrl(httpConfig?: HttpConfig): string {
-    if (httpConfig && httpConfig.baseUrl) {
-      return this.normalizeUrl(httpConfig.baseUrl);
-    }
-    return this.normalizeUrl(this._config.baseUrl);
-  }
-
-  private isUseCache(httpConfig?: HttpConfig): boolean {
-    if (httpConfig && httpConfig.useCache !== undefined) {
-      return httpConfig.useCache;
-    }
-    return this._config.useCache;
-  }
-
-  private isForceUpdate(httpConfig?: HttpConfig): boolean {
-    if (httpConfig && httpConfig.forceUpdate !== undefined) {
-      return httpConfig.forceUpdate;
-    }
-    return this._config.forceUpdate;
-  }
-
-  private getCacheTTL(httpConfig?: HttpConfig): number {
-    if (httpConfig && httpConfig.ttl) {
-      return httpConfig.ttl;
-    }
-    return this._config.ttl;
-  }
-
-  /**
-   * Ensure url end with '/' character.
-   * @param url
-   * @returns {string}
-   */
-  private normalizeUrl(url: string): string {
-    if (url[url.length - 1] !== '/') {
-      return url + '/';
-    }
-    return url
-  }
-
   /**
    * Performs a request with `get` http method.
    */
@@ -226,6 +186,46 @@ export class AwesomeHttpService {
     for (const interceptor of this._requestInterceptors) {
       interceptor.beforeRequest();
     }
+  }
+
+  private getBaseUrl(httpConfig?: HttpConfig): string {
+    if (httpConfig && httpConfig.baseUrl) {
+      return this.normalizeUrl(httpConfig.baseUrl);
+    }
+    return this.normalizeUrl(this._config.baseUrl);
+  }
+
+  private getCacheTTL(httpConfig?: HttpConfig): number {
+    if (httpConfig && httpConfig.ttl) {
+      return httpConfig.ttl;
+    }
+    return this._config.ttl;
+  }
+
+  private isForceUpdate(httpConfig?: HttpConfig): boolean {
+    if (httpConfig && httpConfig.forceUpdate !== undefined) {
+      return httpConfig.forceUpdate;
+    }
+    return this._config.forceUpdate;
+  }
+
+  private isUseCache(httpConfig?: HttpConfig): boolean {
+    if (httpConfig && httpConfig.useCache !== undefined) {
+      return httpConfig.useCache;
+    }
+    return this._config.useCache;
+  }
+
+  /**
+   * Ensure url end with '/' character.
+   * @param url
+   * @returns {string}
+   */
+  private normalizeUrl(url: string): string {
+    if (url[url.length - 1] !== '/') {
+      return url + '/';
+    }
+    return url;
   }
 
 
