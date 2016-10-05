@@ -47,7 +47,7 @@ module.exports = function(config) {
     },
 
     // Webpack please don't spam the console when running in karma!
-    webpackServer: { noInfo: true },
+    webpackMiddleware: { stats: 'errors-only'},
 
     /*
      * test results reporter to use
@@ -70,19 +70,21 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: false,
 
     /*
      * start these browsers
      * available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
      */
     browsers: [
-      'Chrome'
+      'PhantomJS'
     ],
 
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    /*
+     * Continuous Integration mode
+     * if true, Karma captures browsers, runs the tests and exits
+     */
+    singleRun: true
   };
 
     config.set(configuration);

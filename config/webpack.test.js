@@ -4,7 +4,7 @@
 
 const helpers = require('./helpers');
 
-/*
+/**
  * Webpack Plugins
  */
 // problem with copy-webpack-plugin
@@ -148,12 +148,12 @@ module.exports = function (options) {
 
       ],
 
-      /*
-       * Add additional plugins to the compiler.
-       *
-       * See: http://webpack.github.io/docs/configuration.html#plugins
-       */
-      plugins: [
+    /**
+     * Add additional plugins to the compiler.
+     *
+     * See: http://webpack.github.io/docs/configuration.html#plugins
+     */
+    plugins: [
 
 
         /**

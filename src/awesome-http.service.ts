@@ -25,9 +25,9 @@ export class AwesomeHttpService {
   }
 
   public setConfig(config: HttpConfig): void {
+    // forceUpdate can only be set on request config
     this._config.baseUrl = config.baseUrl || this._config.baseUrl;
     this._config.useCache = config.useCache || this._config.useCache;
-    this._config.forceUpdate = config.forceUpdate || this._config.forceUpdate;
     this._config.ttl = config.ttl || this._config.ttl;
   }
 
@@ -222,7 +222,7 @@ export class AwesomeHttpService {
    * @returns {string}
    */
   private normalizeUrl(url: string): string {
-    if (url[url.length - 1] !== '/') {
+    if (url.length > 0 && url[url.length - 1] !== '/') {
       return url + '/';
     }
     return url;
