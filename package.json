@@ -1,6 +1,6 @@
 {
   "name": "ng2-awesome-http",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Angular2 Http library that add some features to default http client",
   "scripts": {
     "clean": "npm cache clean && npm run rimraf -- node_modules doc coverage dist",
