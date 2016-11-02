@@ -20,6 +20,14 @@ describe('-= Cache Service =-', function () {
         value = cacheService.get('foo');
         expect(value).toEqual('bar');
     })));
+    it('Should update value', testing_1.async(testing_1.inject([cache_service_1.CacheService], function (cacheService) {
+        var value = cacheService.get('foo');
+        expect(value).toBeUndefined();
+        cacheService.store('foo', 'bar');
+        cacheService.store('foo', 'gee');
+        value = cacheService.get('foo');
+        expect(value).toEqual('gee');
+    })));
     it('Should store value with TTL and retrieve it before end of TTL', testing_1.async(testing_1.inject([cache_service_1.CacheService], function (cacheService) {
         var value = cacheService.get('foo');
         expect(value).toBeUndefined();

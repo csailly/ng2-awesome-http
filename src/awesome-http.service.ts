@@ -37,7 +37,7 @@ export class AwesomeHttpService {
   public get(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
     let fullUrl: string = this.getBaseUrl(httpConfig) + url;
 
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET ', fullUrl);
+    this.logFullUrl('GET', fullUrl);
 
     if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
       let fromCache = this._cacheService.get(fullUrl);
@@ -52,19 +52,14 @@ export class AwesomeHttpService {
     let myoptions = this.applyGlobalHeaders(options);
 
     return this._http.get(fullUrl, myoptions)
-      .flatMap(res => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET successful', res);
-        this.applyResponseSuccessInterceptors(res);
+      .map(res => this.applyResponseSuccessInterceptors('GET', res))
+      .map(res => {
         if (this.isUseCache(httpConfig)) {
           this._cacheService.store(fullUrl, res, this.getCacheTTL(httpConfig));
         }
-        return Observable.of(res);
+        return res;
       })
-      .catch(error => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET failed', error);
-        this.applyResponseErrorInterceptors(error);
-        return Observable.throw(error);
-      });
+      .catch(error => this.applyResponseErrorInterceptors('GET', error));
   }
 
 
@@ -74,24 +69,31 @@ export class AwesomeHttpService {
   public post(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
     let fullUrl: string = this.getBaseUrl(httpConfig) + url;
 
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST ', fullUrl);
-
+    this.logFullUrl('POST', fullUrl);
     this.applyRequestInterceptors();
 
     let myoptions = this.applyGlobalHeaders(options);
 
     return this._http.post(fullUrl, body, myoptions)
-      .flatMap(res => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST successful', res);
-        this.applyResponseSuccessInterceptors(res);
-        return Observable.of(res);
-      })
-      .catch(error => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST failed', error);
-        this.applyResponseErrorInterceptors(error);
-        return Observable.throw(error);
-      });
+      .map(res => this.applyResponseSuccessInterceptors('POST', res))
+      .catch(error => this.applyResponseErrorInterceptors('POST', error));
 
+  }
+
+  /**
+   * Performs a request with `post` http method.
+   */
+  public put(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
+    let fullUrl: string = this.getBaseUrl(httpConfig) + url;
+
+    this.logFullUrl('PUT', fullUrl);
+    this.applyRequestInterceptors();
+
+    let myoptions = this.applyGlobalHeaders(options);
+
+    return this._http.put(fullUrl, body, myoptions)
+      .map(res => this.applyResponseSuccessInterceptors('PUT', res))
+      .catch(error => this.applyResponseErrorInterceptors('PUT', error));
   }
 
   /**
@@ -100,25 +102,14 @@ export class AwesomeHttpService {
   public delete(url: string, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response> {
     let fullUrl: string = this.getBaseUrl(httpConfig) + url;
 
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE ', fullUrl);
-
+    this.logFullUrl('DELETE', fullUrl);
     this.applyRequestInterceptors();
 
     let myoptions = this.applyGlobalHeaders(options);
 
     return this._http.delete(fullUrl, myoptions)
-      .flatMap(res => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'successful', res);
-
-        this.applyResponseSuccessInterceptors(res);
-        return Observable.of(res);
-      })
-      .catch(error => {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE failed', error);
-
-        this.applyResponseErrorInterceptors(error);
-        return Observable.throw(error);
-      });
+      .map(res => this.applyResponseSuccessInterceptors('DELETE', res))
+      .catch(error => this.applyResponseErrorInterceptors('DELETE', error));
   }
 
   /**
@@ -161,6 +152,9 @@ export class AwesomeHttpService {
     this._globalHeaders.append(name, value);
   }
 
+  private logFullUrl(httpMethod: string, fullUrl: string) {
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, fullUrl);
+  }
 
   private applyGlobalHeaders(options: RequestOptionsArgs): RequestOptionsArgs {
     let myoptions = options || new RequestOptions({headers: new Headers()});
@@ -170,16 +164,24 @@ export class AwesomeHttpService {
     return myoptions;
   }
 
-  private applyResponseErrorInterceptors(response: Response): void {
+  private applyResponseErrorInterceptors(httpMethod: string, response: Response) {
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'failed', response);
+
     for (const interceptor of this._responseErrorInterceptors) {
       interceptor.afterResponse(response);
     }
+
+    return Observable.throw(response);
   }
 
-  private applyResponseSuccessInterceptors(response: Response): void {
+  private applyResponseSuccessInterceptors(httpMethod: string, response: Response): Response {
+    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'successful', response);
+
     for (const interceptor of this._responseSuccessInterceptors) {
       interceptor.afterResponse(response);
     }
+
+    return response;
   }
 
   private applyRequestInterceptors(): void {

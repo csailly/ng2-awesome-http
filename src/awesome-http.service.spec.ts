@@ -117,7 +117,7 @@ describe('-= Awesome Http Service =-', () => {
       );
 
       // 1st call
-      let firstCall: Observable = awesomeHttpService.get(apiEndPoint);
+      let firstCall: Observable<Response> = awesomeHttpService.get(apiEndPoint);
 
       firstCall.subscribe(() => {
         // 2nd call
@@ -159,7 +159,7 @@ describe('-= Awesome Http Service =-', () => {
       );
 
       // 1st call that should store into cache
-      let firstCall: Observable = awesomeHttpService.get(apiEndPoint, null, {useCache: true});
+      let firstCall: Observable<Response> = awesomeHttpService.get(apiEndPoint, null, {useCache: true});
 
       firstCall.subscribe(() => {
         // 2nd call that should retrieve from cache
@@ -204,7 +204,7 @@ describe('-= Awesome Http Service =-', () => {
       awesomeHttpService.setConfig({useCache: true});
 
       // 1st call that should store into cache
-      let firstCall: Observable = awesomeHttpService.get(apiEndPoint);
+      let firstCall: Observable<Response> = awesomeHttpService.get(apiEndPoint);
 
       firstCall.subscribe(() => {
         // 2nd call that should retrieve from cache
@@ -249,7 +249,7 @@ describe('-= Awesome Http Service =-', () => {
       awesomeHttpService.setConfig({useCache: true});
 
       // 1st call that should store into cache
-      let firstCall: Observable = awesomeHttpService.get(apiEndPoint);
+      let firstCall: Observable<Response> = awesomeHttpService.get(apiEndPoint);
 
       firstCall.subscribe(() => {
         // 2nd call that should retrieve from cache
@@ -294,7 +294,7 @@ describe('-= Awesome Http Service =-', () => {
       awesomeHttpService.setConfig({useCache: true, forceUpdate: true});
 
       // 1st call that should store into cache
-      let firstCall: Observable = awesomeHttpService.get(apiEndPoint);
+      let firstCall: Observable<Response> = awesomeHttpService.get(apiEndPoint);
 
       firstCall.subscribe(() => {
         // 2nd call that should retrieve from cache

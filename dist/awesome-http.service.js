@@ -15,45 +15,10 @@ var AwesomeHttpService = (function () {
         this._config = { useCache: false, baseUrl: '', forceUpdate: false };
     }
     AwesomeHttpService.prototype.setConfig = function (config) {
+        // forceUpdate can only be set on request config
         this._config.baseUrl = config.baseUrl || this._config.baseUrl;
         this._config.useCache = config.useCache || this._config.useCache;
-        this._config.forceUpdate = config.forceUpdate || this._config.forceUpdate;
         this._config.ttl = config.ttl || this._config.ttl;
-    };
-    AwesomeHttpService.prototype.getBaseUrl = function (httpConfig) {
-        if (httpConfig && httpConfig.baseUrl) {
-            return this.normalizeUrl(httpConfig.baseUrl);
-        }
-        return this.normalizeUrl(this._config.baseUrl);
-    };
-    AwesomeHttpService.prototype.isUseCache = function (httpConfig) {
-        if (httpConfig && httpConfig.useCache !== undefined) {
-            return httpConfig.useCache;
-        }
-        return this._config.useCache;
-    };
-    AwesomeHttpService.prototype.isForceUpdate = function (httpConfig) {
-        if (httpConfig && httpConfig.forceUpdate !== undefined) {
-            return httpConfig.forceUpdate;
-        }
-        return this._config.forceUpdate;
-    };
-    AwesomeHttpService.prototype.getCacheTTL = function (httpConfig) {
-        if (httpConfig && httpConfig.ttl) {
-            return httpConfig.ttl;
-        }
-        return this._config.ttl;
-    };
-    /**
-     * Ensure url end with '/' character.
-     * @param url
-     * @returns {string}
-     */
-    AwesomeHttpService.prototype.normalizeUrl = function (url) {
-        if (url[url.length - 1] !== '/') {
-            return url + '/';
-        }
-        return url;
     };
     /**
      * Performs a request with `get` http method.
@@ -61,7 +26,7 @@ var AwesomeHttpService = (function () {
     AwesomeHttpService.prototype.get = function (url, options, httpConfig) {
         var _this = this;
         var fullUrl = this.getBaseUrl(httpConfig) + url;
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET ', fullUrl);
+        this.logFullUrl('GET', fullUrl);
         if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
             var fromCache = this._cacheService.get(fullUrl);
             if (fromCache) {
@@ -72,19 +37,14 @@ var AwesomeHttpService = (function () {
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
         return this._http.get(fullUrl, myoptions)
-            .flatMap(function (res) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET successful', res);
-            _this.applyResponseSuccessInterceptors(res);
+            .map(function (res) { return _this.applyResponseSuccessInterceptors('GET', res); })
+            .map(function (res) {
             if (_this.isUseCache(httpConfig)) {
                 _this._cacheService.store(fullUrl, res, _this.getCacheTTL(httpConfig));
             }
-            return Rx_1.Observable.of(res);
+            return res;
         })
-            .catch(function (error) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' GET failed', error);
-            _this.applyResponseErrorInterceptors(error);
-            return Rx_1.Observable.throw(error);
-        });
+            .catch(function (error) { return _this.applyResponseErrorInterceptors('GET', error); });
     };
     /**
      * Performs a request with `post` http method.
@@ -92,20 +52,25 @@ var AwesomeHttpService = (function () {
     AwesomeHttpService.prototype.post = function (url, body, options, httpConfig) {
         var _this = this;
         var fullUrl = this.getBaseUrl(httpConfig) + url;
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST ', fullUrl);
+        this.logFullUrl('POST', fullUrl);
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
         return this._http.post(fullUrl, body, myoptions)
-            .flatMap(function (res) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST successful', res);
-            _this.applyResponseSuccessInterceptors(res);
-            return Rx_1.Observable.of(res);
-        })
-            .catch(function (error) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' POST failed', error);
-            _this.applyResponseErrorInterceptors(error);
-            return Rx_1.Observable.throw(error);
-        });
+            .map(function (res) { return _this.applyResponseSuccessInterceptors('POST', res); })
+            .catch(function (error) { return _this.applyResponseErrorInterceptors('POST', error); });
+    };
+    /**
+     * Performs a request with `post` http method.
+     */
+    AwesomeHttpService.prototype.put = function (url, body, options, httpConfig) {
+        var _this = this;
+        var fullUrl = this.getBaseUrl(httpConfig) + url;
+        this.logFullUrl('PUT', fullUrl);
+        this.applyRequestInterceptors();
+        var myoptions = this.applyGlobalHeaders(options);
+        return this._http.put(fullUrl, body, myoptions)
+            .map(function (res) { return _this.applyResponseSuccessInterceptors('PUT', res); })
+            .catch(function (error) { return _this.applyResponseErrorInterceptors('PUT', error); });
     };
     /**
      * Performs a request with `delete` http method.
@@ -113,20 +78,12 @@ var AwesomeHttpService = (function () {
     AwesomeHttpService.prototype.delete = function (url, options, httpConfig) {
         var _this = this;
         var fullUrl = this.getBaseUrl(httpConfig) + url;
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE ', fullUrl);
+        this.logFullUrl('DELETE', fullUrl);
         this.applyRequestInterceptors();
         var myoptions = this.applyGlobalHeaders(options);
         return this._http.delete(fullUrl, myoptions)
-            .flatMap(function (res) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'successful', res);
-            _this.applyResponseSuccessInterceptors(res);
-            return Rx_1.Observable.of(res);
-        })
-            .catch(function (error) {
-            console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' DELETE failed', error);
-            _this.applyResponseErrorInterceptors(error);
-            return Rx_1.Observable.throw(error);
-        });
+            .map(function (res) { return _this.applyResponseSuccessInterceptors('DELETE', res); })
+            .catch(function (error) { return _this.applyResponseErrorInterceptors('DELETE', error); });
     };
     /**
      * Add a new Response interceptor
@@ -160,6 +117,9 @@ var AwesomeHttpService = (function () {
     AwesomeHttpService.prototype.addGlobalHeader = function (name, value) {
         this._globalHeaders.append(name, value);
     };
+    AwesomeHttpService.prototype.logFullUrl = function (httpMethod, fullUrl) {
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, fullUrl);
+    };
     AwesomeHttpService.prototype.applyGlobalHeaders = function (options) {
         var myoptions = options || new http_1.RequestOptions({ headers: new http_1.Headers() });
         for (var _i = 0, _a = this._globalHeaders.keys(); _i < _a.length; _i++) {
@@ -168,23 +128,62 @@ var AwesomeHttpService = (function () {
         }
         return myoptions;
     };
-    AwesomeHttpService.prototype.applyResponseErrorInterceptors = function (response) {
+    AwesomeHttpService.prototype.applyResponseErrorInterceptors = function (httpMethod, response) {
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'failed', response);
         for (var _i = 0, _a = this._responseErrorInterceptors; _i < _a.length; _i++) {
             var interceptor = _a[_i];
             interceptor.afterResponse(response);
         }
+        return Rx_1.Observable.throw(response);
     };
-    AwesomeHttpService.prototype.applyResponseSuccessInterceptors = function (response) {
+    AwesomeHttpService.prototype.applyResponseSuccessInterceptors = function (httpMethod, response) {
+        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'successful', response);
         for (var _i = 0, _a = this._responseSuccessInterceptors; _i < _a.length; _i++) {
             var interceptor = _a[_i];
             interceptor.afterResponse(response);
         }
+        return response;
     };
     AwesomeHttpService.prototype.applyRequestInterceptors = function () {
         for (var _i = 0, _a = this._requestInterceptors; _i < _a.length; _i++) {
             var interceptor = _a[_i];
             interceptor.beforeRequest();
         }
+    };
+    AwesomeHttpService.prototype.getBaseUrl = function (httpConfig) {
+        if (httpConfig && httpConfig.baseUrl) {
+            return this.normalizeUrl(httpConfig.baseUrl);
+        }
+        return this.normalizeUrl(this._config.baseUrl);
+    };
+    AwesomeHttpService.prototype.getCacheTTL = function (httpConfig) {
+        if (httpConfig && httpConfig.ttl) {
+            return httpConfig.ttl;
+        }
+        return this._config.ttl;
+    };
+    AwesomeHttpService.prototype.isForceUpdate = function (httpConfig) {
+        if (httpConfig && httpConfig.forceUpdate !== undefined) {
+            return httpConfig.forceUpdate;
+        }
+        return this._config.forceUpdate;
+    };
+    AwesomeHttpService.prototype.isUseCache = function (httpConfig) {
+        if (httpConfig && httpConfig.useCache !== undefined) {
+            return httpConfig.useCache;
+        }
+        return this._config.useCache;
+    };
+    /**
+     * Ensure url end with '/' character.
+     * @param url
+     * @returns {string}
+     */
+    AwesomeHttpService.prototype.normalizeUrl = function (url) {
+        if (url.length > 0 && url[url.length - 1] !== '/') {
+            return url + '/';
+        }
+        return url;
     };
     AwesomeHttpService = __decorate([
         core_1.Injectable(), 
