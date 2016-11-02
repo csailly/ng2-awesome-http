@@ -14,16 +14,6 @@ export declare class AwesomeHttpService {
     private _config;
     constructor(_cacheService: CacheService, _http: Http);
     setConfig(config: HttpConfig): void;
-    private getBaseUrl(httpConfig?);
-    private isUseCache(httpConfig?);
-    private isForceUpdate(httpConfig?);
-    private getCacheTTL(httpConfig?);
-    /**
-     * Ensure url end with '/' character.
-     * @param url
-     * @returns {string}
-     */
-    private normalizeUrl(url);
     /**
      * Performs a request with `get` http method.
      */
@@ -32,6 +22,10 @@ export declare class AwesomeHttpService {
      * Performs a request with `post` http method.
      */
     post(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response>;
+    /**
+     * Performs a request with `post` http method.
+     */
+    put(url: string, body: any, options?: RequestOptionsArgs, httpConfig?: HttpConfig): Observable<Response>;
     /**
      * Performs a request with `delete` http method.
      */
@@ -57,8 +51,19 @@ export declare class AwesomeHttpService {
      * @param value: the header value
      */
     addGlobalHeader(name: string, value: any): void;
+    private logFullUrl(httpMethod, fullUrl);
     private applyGlobalHeaders(options);
-    private applyResponseErrorInterceptors(response);
-    private applyResponseSuccessInterceptors(response);
+    private applyResponseErrorInterceptors(httpMethod, response);
+    private applyResponseSuccessInterceptors(httpMethod, response);
     private applyRequestInterceptors();
+    private getBaseUrl(httpConfig?);
+    private getCacheTTL(httpConfig?);
+    private isForceUpdate(httpConfig?);
+    private isUseCache(httpConfig?);
+    /**
+     * Ensure url end with '/' character.
+     * @param url
+     * @returns {string}
+     */
+    private normalizeUrl(url);
 }
