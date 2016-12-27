@@ -4,6 +4,7 @@ import { ResponseInterceptor } from './response-interceptor.model';
 import { RequestInterceptor } from './request-interceptor.model';
 import { CacheService } from './cache/cache.service';
 import { HttpConfig } from './cache/http-config.model';
+import { LoggerConfig } from './logger';
 export declare class AwesomeHttpService {
     private _cacheService;
     private _http;
@@ -12,8 +13,10 @@ export declare class AwesomeHttpService {
     private _requestInterceptors;
     private _globalHeaders;
     private _config;
+    private _logger;
     constructor(_cacheService: CacheService, _http: Http);
     setConfig(config: HttpConfig): void;
+    setLoggerConfig(loggerConfig: LoggerConfig): void;
     /**
      * Performs a request with `get` http method.
      */

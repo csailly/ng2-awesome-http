@@ -5,7 +5,7 @@ import { ResponseInterceptor } from './response-interceptor.model';
 import { RequestInterceptor } from './request-interceptor.model';
 import { CacheService } from './cache/cache.service';
 import { HttpConfig } from './cache/http-config.model';
-
+import { Logger, LoggerConfig } from './logger';
 @Injectable()
 export class AwesomeHttpService {
 
@@ -14,14 +14,15 @@ export class AwesomeHttpService {
   private _requestInterceptors: RequestInterceptor[];
   private _globalHeaders: Headers;
   private _config: HttpConfig;
+  private _logger = new Logger();
 
   constructor(private _cacheService: CacheService, private _http: Http) {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'AwesomeHttpService constructor');
     this._responseErrorInterceptors = [];
     this._responseSuccessInterceptors = [];
     this._requestInterceptors = [];
     this._globalHeaders = new Headers();
     this._config = {useCache: false, baseUrl: '', forceUpdate: false};
+    this._cacheService.setLogger(this._logger);
   }
 
   public setConfig(config: HttpConfig): void {
@@ -29,6 +30,10 @@ export class AwesomeHttpService {
     this._config.baseUrl = config.baseUrl || this._config.baseUrl;
     this._config.useCache = config.useCache || this._config.useCache;
     this._config.ttl = config.ttl || this._config.ttl;
+  }
+
+  public setLoggerConfig(loggerConfig: LoggerConfig) {
+    this._logger.setConfig(loggerConfig);
   }
 
   /**
@@ -42,7 +47,7 @@ export class AwesomeHttpService {
     if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
       let fromCache = this._cacheService.get(fullUrl);
       if (fromCache) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' CACHE', fromCache);
+        this._logger.log('CACHE', fromCache);
         return Observable.of(fromCache);
       }
     }
@@ -117,7 +122,7 @@ export class AwesomeHttpService {
    * @param interceptor: the interceptor to add.
    */
   public addResponseErrorInterceptor(interceptor: ResponseInterceptor): void {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Error Interceptor ');
+    this._logger.log('add Response Error Interceptor ');
 
     this._responseErrorInterceptors.push(interceptor);
   }
@@ -127,8 +132,7 @@ export class AwesomeHttpService {
    * @param interceptor: the interceptor to add.
    */
   public addResponseSuccessInterceptor(interceptor: ResponseInterceptor): void {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•',
-      ' add Response Success Interceptor ');
+    this._logger.log('add Response Success Interceptor ');
 
     this._responseSuccessInterceptors.push(interceptor);
   }
@@ -138,7 +142,7 @@ export class AwesomeHttpService {
    * @param interceptor: the interceptor to add.
    */
   public addRequestInterceptor(interceptor: RequestInterceptor): void {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Request Interceptor ');
+    this._logger.log(' add Request Interceptor ');
 
     this._requestInterceptors.push(interceptor);
   }
@@ -153,7 +157,7 @@ export class AwesomeHttpService {
   }
 
   private logFullUrl(httpMethod: string, fullUrl: string) {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, fullUrl);
+    this._logger.log(httpMethod, fullUrl);
   }
 
   private applyGlobalHeaders(options: RequestOptionsArgs): RequestOptionsArgs {
@@ -165,7 +169,7 @@ export class AwesomeHttpService {
   }
 
   private applyResponseErrorInterceptors(httpMethod: string, response: Response) {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'failed', response);
+    this._logger.log(httpMethod, 'failed', response);
 
     for (const interceptor of this._responseErrorInterceptors) {
       interceptor.afterResponse(response);
@@ -175,7 +179,7 @@ export class AwesomeHttpService {
   }
 
   private applyResponseSuccessInterceptors(httpMethod: string, response: Response): Response {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'successful', response);
+    this._logger.log(httpMethod, 'successful', response);
 
     for (const interceptor of this._responseSuccessInterceptors) {
       interceptor.afterResponse(response);
