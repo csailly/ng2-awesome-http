@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { CacheValue } from './cache-value.model';
 
+import { Logger } from '../logger';
+
 @Injectable()
 export class CacheService {
   private _cache: Map<string, CacheValue>;
 
+  private _logger: Logger;
+
   constructor() {
-    console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'CacheService constructor');
     this._cache = new Map<string, CacheValue>();
   }
 
   get(key: string): any {
-    console.debug('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'CacheService get', key);
+    this._logger.debug('CacheService get', key);
 
     let cacheValue = this._cache.get(key);
 
@@ -28,7 +31,7 @@ export class CacheService {
   }
 
   store(key: string, value: any, ttl?: number) {
-    console.debug('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'CacheService store', key, value, ttl);
+    this._logger.debug('CacheService store', key, value, ttl);
 
     let cacheValue = new CacheValue();
     cacheValue.value = value;
@@ -36,6 +39,10 @@ export class CacheService {
       cacheValue.endValidityTime = Date.now() + ttl;
     }
     this._cache.set(key, cacheValue);
+  }
+
+  setLogger(logger: Logger) {
+    this._logger = logger;
   }
 
 

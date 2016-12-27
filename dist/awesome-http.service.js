@@ -3,22 +3,27 @@ var core_1 = require('@angular/core');
 var http_1 = require('@angular/http');
 var Rx_1 = require('rxjs/Rx');
 var cache_service_1 = require('./cache/cache.service');
+var logger_1 = require('./logger');
 var AwesomeHttpService = (function () {
     function AwesomeHttpService(_cacheService, _http) {
         this._cacheService = _cacheService;
         this._http = _http;
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', 'AwesomeHttpService constructor');
+        this._logger = new logger_1.Logger();
         this._responseErrorInterceptors = [];
         this._responseSuccessInterceptors = [];
         this._requestInterceptors = [];
         this._globalHeaders = new http_1.Headers();
         this._config = { useCache: false, baseUrl: '', forceUpdate: false };
+        this._cacheService.setLogger(this._logger);
     }
     AwesomeHttpService.prototype.setConfig = function (config) {
         // forceUpdate can only be set on request config
         this._config.baseUrl = config.baseUrl || this._config.baseUrl;
         this._config.useCache = config.useCache || this._config.useCache;
         this._config.ttl = config.ttl || this._config.ttl;
+    };
+    AwesomeHttpService.prototype.setLoggerConfig = function (loggerConfig) {
+        this._logger.setConfig(loggerConfig);
     };
     /**
      * Performs a request with `get` http method.
@@ -30,7 +35,7 @@ var AwesomeHttpService = (function () {
         if (this.isUseCache(httpConfig) && !this.isForceUpdate(httpConfig)) {
             var fromCache = this._cacheService.get(fullUrl);
             if (fromCache) {
-                console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' CACHE', fromCache);
+                this._logger.log('CACHE', fromCache);
                 return Rx_1.Observable.of(fromCache);
             }
         }
@@ -90,7 +95,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addResponseErrorInterceptor = function (interceptor) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Error Interceptor ');
+        this._logger.log('add Response Error Interceptor ');
         this._responseErrorInterceptors.push(interceptor);
     };
     /**
@@ -98,7 +103,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addResponseSuccessInterceptor = function (interceptor) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Response Success Interceptor ');
+        this._logger.log('add Response Success Interceptor ');
         this._responseSuccessInterceptors.push(interceptor);
     };
     /**
@@ -106,7 +111,7 @@ var AwesomeHttpService = (function () {
      * @param interceptor: the interceptor to add.
      */
     AwesomeHttpService.prototype.addRequestInterceptor = function (interceptor) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', ' add Request Interceptor ');
+        this._logger.log(' add Request Interceptor ');
         this._requestInterceptors.push(interceptor);
     };
     /**
@@ -118,7 +123,7 @@ var AwesomeHttpService = (function () {
         this._globalHeaders.append(name, value);
     };
     AwesomeHttpService.prototype.logFullUrl = function (httpMethod, fullUrl) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, fullUrl);
+        this._logger.log(httpMethod, fullUrl);
     };
     AwesomeHttpService.prototype.applyGlobalHeaders = function (options) {
         var myoptions = options || new http_1.RequestOptions({ headers: new http_1.Headers() });
@@ -129,7 +134,7 @@ var AwesomeHttpService = (function () {
         return myoptions;
     };
     AwesomeHttpService.prototype.applyResponseErrorInterceptors = function (httpMethod, response) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'failed', response);
+        this._logger.log(httpMethod, 'failed', response);
         for (var _i = 0, _a = this._responseErrorInterceptors; _i < _a.length; _i++) {
             var interceptor = _a[_i];
             interceptor.afterResponse(response);
@@ -137,7 +142,7 @@ var AwesomeHttpService = (function () {
         return Rx_1.Observable.throw(response);
     };
     AwesomeHttpService.prototype.applyResponseSuccessInterceptors = function (httpMethod, response) {
-        console.log('•?((¯°·._.• Awesome Http module •._.·°¯))؟•', httpMethod, 'successful', response);
+        this._logger.log(httpMethod, 'successful', response);
         for (var _i = 0, _a = this._responseSuccessInterceptors; _i < _a.length; _i++) {
             var interceptor = _a[_i];
             interceptor.afterResponse(response);
